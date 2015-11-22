@@ -8,11 +8,14 @@ Description:
 ToDo:   
     unicode problem(fixed)    
 """
+import functools
 import os
 import sys
 import xlrd
 import time
 import platform
+import sys 
+import threading
 
 from Tkinter import *
 
@@ -23,13 +26,21 @@ class Application(Frame):
         self.dat = os.path.join(os.path.dirname(sys.argv[0]),
                                 "./dat.xls") 
         
+        self.beg = "2015-08-19 00:00:00"
+        self.end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())        
+        self.now = time.mktime(time.localtime())
+        
         master.title(sys.argv[0])
+        master.option_add('*font', ('verdana', 13, 'bold')) 
         # master.geometry("300x200")
         
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
     
+    def __del__(self):
+        pass
+
     def get_pregnancy_time(self, beg, end):
         """
         `param beg`: %Y-%m-%d %H:%M:%S
@@ -102,43 +113,104 @@ class Application(Frame):
             return u"营养素:{}\n作用:{}\n说明:{}\n".format(nutrient, role, note)
 
     def createWidgets(self):
+
         days, weeks, days2, month, tval = self.get_pregnancy_time(
             '2015-08-19 00:00:00',
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             )
 
         #top bar
-        top_bar = Frame(root, relief='raised', bd=1)
-        top_bar.pack(side=TOP, fill=X, expand=NO)
+        self.topF = Frame(root, relief='raised', bd=1)
+        self.topF.pack(side=TOP, fill=X, expand=NO)
+       
+        self.top_label = StringVar()
+        self.top_label.set(u"{}到{}".format(self.beg[:10], self.end[:10]))        
+
+        Label(self.topF,
+              textvariable=self.top_label).pack(side=LEFT, padx=10)
         
-        top_label = Label(top_bar,
-                          text=u"{}到{}".format(
-                                "2015-08-19",    
-                                time.strftime("%Y-%m-%d"),
-                              )
-                         )
-        top_label.pack(side=LEFT, padx=10)
-        top_sv = StringVar()
-        Entry(top_bar, textvariable=top_sv,width=100).pack(side=LEFT, fill=X)
-        top_sv.set('')       
+        self.prev_btn = Button(self.topF, 
+                               text=u"昨天", 
+                               command=functools.partial(self.bupdate, 
+                                                         self.beg, 
+                                                         -1))
+        self.prev_btn.pack(side=LEFT,padx=5)
+        
+        self.next_btn = Button(self.topF,
+                               text=u"明天",
+                               command=functools.partial(self.bupdate,
+                                                         self.beg,
+                                                         1)) 
+        self.next_btn.pack(side=LEFT) 
+        
+        self.top_entry = StringVar()
+        self.top_entry.set('')       
+        Entry(self.topF, textvariable=self.top_entry, width=100).pack(side=LEFT, fill=X)
+        
+        self.rset_btn = Button(self.topF,
+                               text=u'rset',
+                               command=functools.partial(self.update_content,
+                                                         self.beg,
+                                                         self.end)) 
+        self.rset_btn.pack(side=LEFT)
+
+        self.contentF = Frame(root)
+        self.contentF.pack(side=LEFT)        
+        
+        self.content_fill(self.beg,
+                          self.end)
+
+        # bg_thread = threading.Thread(target=self.update_content, args=(self.beg, self.end))       
+        # bg_thread.start()
+    
+    def bupdate(self, beg, days):
+
+        self.now += days*24*3600
+        end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.now))        
+        
+        self.top_label.set(u"{}到{}".format(beg[:10], end[:10]))        
+        
+        try:
+            self.update_content(beg, end)        
+        except:
+            assert False 
+
+    def hello(self):
+        print 'hello'
+
+    def update_content(self, beg, end):
+        self.contentF.destroy()
+        self.contentF = Frame(root)
+        self.contentF.pack(side=LEFT)        
+        self.content_fill(beg, end)        
+
+    def content_fill(self, beg, end):
+        """
+        `param beg`: begin time, format: %Y-%m-%d %H:%M:%S
+        `param end`: end time, format: %Y-%m-%d %H:%M:%S
+        """
+        days, weeks, days2, month, tval = self.get_pregnancy_time(beg, 
+                                                                  end)
 
         #left side, daily note.
-        dailyF = Frame(root, relief=SUNKEN, bd=1)
+        dailyF = Frame(self.contentF, relief=SUNKEN, bd=1)
         dailyF.pack(side=LEFT, expand=NO)
         self.fill_text(dailyF,
                        lval=u"第{}天({}周零{}天),日提醒:".format(days, weeks, days2),
                        cval=self.get_daily(days+1, 4)) 
         # notescroll.pack(side=RIGHT, fill=Y)
-
+        # destroy method
+        # dailyF.destroy()        
+        
         # week
-        weekF = Frame(root)
+        weekF = Frame(self.contentF)
         weekF.pack(side=LEFT)
         self.fill_text(weekF,
                        lval=u"第{}周,周提醒:".format(weeks+1),
                        cval=self.get_week(weeks+3, 3))
          
         # month
-        monthF = Frame(root)
+        monthF = Frame(self.contentF)
         monthF.pack(side=LEFT)        
         self.fill_text(monthF,
                        lval=u"第{}月, 月提示:".format(month+1),
@@ -172,6 +244,9 @@ class Application(Frame):
 
         notetext.insert(END, cval, 'mid') 
         
+        # ok, delete method, clear all text
+        # notetext.delete(0.0, END)
+
         # notetext.grid(row=1, column=0)
         # notescroll.grid(row=1, column=1)
         notetext.pack(side=LEFT)        
