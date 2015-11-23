@@ -38,8 +38,11 @@ class Application(Frame):
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
-    
+                
+
+
     def __del__(self):
+        print 'del call'
         pass
 
     def get_pregnancy_time(self, beg, end):
