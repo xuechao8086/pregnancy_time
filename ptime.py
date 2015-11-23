@@ -6,7 +6,8 @@ Filename:       ptime.py
 Create Time:  2015-11-21 11:05
 Description:
 ToDo:   
-    unicode problem(fixed)    
+    unicode problem(fixed)
+    find out what anchor mean?
 """
 import functools
 import os
@@ -82,7 +83,10 @@ class Application(Frame):
                 print "Worksheet name(s): ",book.sheet_names()[0]
                 print 'book.nsheets',book.nsheets
                 print 'sh.name:',sh.name,'sh.nrows:',sh.nrows,'sh.ncols:',sh.ncols
-            return sh.cell_value(row, col).encode('utf-8') 
+            try: 
+                return sh.cell_value(row, col).encode('utf-8') 
+            except:
+                return u"无内容可显示，请检查excel"
     
     def get_week(self, row, col):
         with xlrd.open_workbook(self.dat) as book:
@@ -91,7 +95,10 @@ class Application(Frame):
                 print "Worksheet name(s): ",book.sheet_names()[1]
                 print 'book.nsheets',book.nsheets 
                 print 'sh.name:',sh.name,'sh.nrows:',sh.nrows,'sh.ncols:',sh.ncols
-            return sh.cell_value(row, col).encode('utf-8') 
+            try:
+                return sh.cell_value(row, col).encode('utf-8') 
+            except:
+                return u"无内容可显示, 请检查excel"
         
     def get_month(self, row, col):
         with xlrd.open_workbook(self.dat) as book:
@@ -106,11 +113,15 @@ class Application(Frame):
                             print i, j, sh.cell_value(i, j).encode('utf-8')
                         except:
                             print i, j, 'no val'
-            nutrient = sh.cell_value(row, col-2)            
-            role = sh.cell_value(row, col-1) 
-            note = sh.cell_value(row, col)
+            try:
+                nutrient = sh.cell_value(row, col-2)            
+                role = sh.cell_value(row, col-1) 
+                note = sh.cell_value(row, col)
 
-            return u"营养素:{}\n作用:{}\n说明:{}\n".format(nutrient, role, note)
+                return u"营养素:{}\n作用:{}\n说明:{}\n".format(nutrient, role, note)
+            except:
+                return u"无内容可显示，请检查excel"
+
 
     def createWidgets(self):
 
@@ -122,53 +133,78 @@ class Application(Frame):
         #top bar
         self.topF = Frame(root, relief='raised', bd=1)
         self.topF.pack(side=TOP, fill=X, expand=NO)
-       
-        self.top_label = StringVar()
-        self.top_label.set(u"{}到{}".format(self.beg[:10], self.end[:10]))        
+        
+        top_leftF = Frame(self.topF)
+        top_leftF.pack(side=LEFT)
+        top_rightF = Frame(self.topF)
+        top_rightF.pack(side=RIGHT)
 
-        Label(self.topF,
-              textvariable=self.top_label).pack(side=LEFT, padx=10)
+        self.time_label = StringVar()
+        self.time_label.set(u"{}".format(
+            time.strftime(u"%Y-%m-%d %H:%M:%S", time.localtime())))
+    
+        Label(top_leftF,
+              textvariable=self.time_label).pack(side=TOP, padx=10, anchor=W)
+
+        Button(top_rightF, 
+               text=u"昨天", 
+               relief=GROOVE,
+               borderwidth=5,
+               command=functools.partial(self.bupdate, 
+                                         self.beg, 
+                                         -1)).pack(side=LEFT,padx=5)
         
-        self.prev_btn = Button(self.topF, 
-                               text=u"昨天", 
-                               command=functools.partial(self.bupdate, 
-                                                         self.beg, 
-                                                         -1))
-        self.prev_btn.pack(side=LEFT,padx=5)
-        
-        self.next_btn = Button(self.topF,
-                               text=u"明天",
-                               command=functools.partial(self.bupdate,
-                                                         self.beg,
-                                                         1)) 
-        self.next_btn.pack(side=LEFT) 
+        Button(top_rightF,
+               text=u"明天",
+               relief=GROOVE,
+               borderwidth=5,
+               command=functools.partial(self.bupdate,
+                                         self.beg,
+                                         1)).pack(side=LEFT) 
         
         self.top_entry = StringVar()
         self.top_entry.set('')       
-        Entry(self.topF, textvariable=self.top_entry, width=100).pack(side=LEFT, fill=X)
+        Entry(top_rightF, textvariable=self.top_entry, width=100).pack(side=LEFT, fill=X)
         
-        self.rset_btn = Button(self.topF,
-                               text=u'rset',
-                               command=functools.partial(self.update_content,
-                                                         self.beg,
-                                                         self.end)) 
-        self.rset_btn.pack(side=LEFT)
+        Button(top_rightF,
+               text=u'rset',
+               command=functools.partial(self.update_content,
+                                         self.beg,
+                                         self.end)).pack(side=LEFT)
 
         self.contentF = Frame(root)
-        self.contentF.pack(side=LEFT)        
+        self.contentF.pack(side=TOP)        
         
         self.content_fill(self.beg,
                           self.end)
 
+        # self.bottomF = Frame(root, width=100)
+        # self.bottomF.pack(side=TOP)
+        # self.bottom_label = StringVar()
+        # self.bottom_label.set(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        
+        # bottomLabelF = Frame(self.bottomF)
+        # bottomLabelF.pack(side=RIGHT)
+        # l = Label(bottomLabelF,
+        #      textvariable=self.bottom_label)
+        # l.pack(side=RIGHT, fill=X)
+        # l.grid(row=1, column=99) 
+        # l.place(in_=bottomLabelF,x=1, y=1, relx=0, rely=0, anchor=SE) 
+
         # bg_thread = threading.Thread(target=self.update_content, args=(self.beg, self.end))       
         # bg_thread.start()
+        
+        bg_thread = threading.Thread(target=self.update_time)
+        bg_thread.start()
     
-    def bupdate(self, beg, days):
+    def update_time(self):
+        while True:
+            self.time_label.set(time.strftime("%Y-%m:%d %H:%M:%S", time.localtime()))
+            time.sleep(1)
 
+    def bupdate(self, beg, days):
         self.now += days*24*3600
         end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.now))        
-        
-        self.top_label.set(u"{}到{}".format(beg[:10], end[:10]))        
         
         try:
             self.update_content(beg, end)        
@@ -189,28 +225,39 @@ class Application(Frame):
         `param beg`: begin time, format: %Y-%m-%d %H:%M:%S
         `param end`: end time, format: %Y-%m-%d %H:%M:%S
         """
+        contentFT = Frame(self.contentF)        
+        contentFT.pack(side=TOP)
+        
+        self.content_label = StringVar()
+        self.content_label.set(u"从{}到{}".format(beg[:10], end[:10]))        
+        Label(contentFT, textvariable=self.content_label).pack(side=TOP) 
+        
+        contentFL = Frame(self.contentF)
+        contentFL.pack(side=TOP)
         days, weeks, days2, month, tval = self.get_pregnancy_time(beg, 
                                                                   end)
 
         #left side, daily note.
-        dailyF = Frame(self.contentF, relief=SUNKEN, bd=1)
-        dailyF.pack(side=LEFT, expand=NO)
+        dailyF = Frame(contentFL,
+                       #relief=SUNKEN, bd=1
+                      )
+        dailyF.pack(side=LEFT)
         self.fill_text(dailyF,
-                       lval=u"第{}天({}周零{}天),日提醒:".format(days, weeks, days2),
+                       lval=u"第{}天({}周另加{}天),日提醒:".format(days, weeks, days2),
                        cval=self.get_daily(days+1, 4)) 
         # notescroll.pack(side=RIGHT, fill=Y)
         # destroy method
         # dailyF.destroy()        
         
         # week
-        weekF = Frame(self.contentF)
+        weekF = Frame(contentFL)
         weekF.pack(side=LEFT)
         self.fill_text(weekF,
                        lval=u"第{}周,周提醒:".format(weeks+1),
                        cval=self.get_week(weeks+3, 3))
          
         # month
-        monthF = Frame(self.contentF)
+        monthF = Frame(contentFL)
         monthF.pack(side=LEFT)        
         self.fill_text(monthF,
                        lval=u"第{}月, 月提示:".format(month+1),
@@ -228,7 +275,8 @@ class Application(Frame):
         # notelabel.grid(row=0, column=0, padx=5)        
         # notelabel.pack(side=TOP) 
 
-        notetext = Text(frame, height=50, width=50)
+        # notetext = Text(frame, height=50, width=50)
+        notetext = Text(frame, width=50)
         notetext.tag_configure('big',
                                foreground='red',
                                font=('Verdana', 24, 'bold')) 
