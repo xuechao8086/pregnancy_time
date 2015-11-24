@@ -41,7 +41,6 @@ class Application(Frame):
 
 
     def __del__(self):
-        print 'del call'
         pass
 
     def get_pregnancy_time(self, beg, end):
@@ -170,9 +169,9 @@ class Application(Frame):
         
         Button(top_rightF,
                text=u'rset',
-               command=functools.partial(self.update_content,
+               command=functools.partial(self.bupdate,
                                          self.beg,
-                                         self.end)).pack(side=LEFT)
+                                         0)).pack(side=LEFT)
 
         self.contentF = Frame(root)
         self.contentF.pack(side=TOP)        
@@ -200,14 +199,20 @@ class Application(Frame):
         bg_thread.start()
     
     def update_time(self):
-        while True:
-            self.time_label.set(time.strftime("%Y-%m:%d %H:%M:%S", time.localtime()))
-            time.sleep(1)
+        try:
+            while True:
+                self.time_label.set(time.strftime("%Y-%m:%d %H:%M:%S", time.localtime()))
+                time.sleep(1)
+        except:
+            pass
 
     def bupdate(self, beg, days):
-        self.now += days*24*3600
-        end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.now))        
+        if days != 0: 
+            self.now += days*24*3600
+        else:
+            self.now = time.mktime(time.localtime())
         
+        end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.now))        
         try:
             self.update_content(beg, end)        
         except:
@@ -360,4 +365,4 @@ if __name__ == '__main__':
     app = Application(master=root)
 
     app.mainloop()
-    root.destroy()
+    # root.destroy()
