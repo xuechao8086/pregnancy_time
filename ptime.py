@@ -38,7 +38,6 @@ class Application(Frame):
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
-                
 
 
     def __del__(self):
@@ -134,7 +133,7 @@ class Application(Frame):
             )
 
         #top bar
-        self.topF = Frame(root, relief='raised', bd=1)
+        self.topF = Frame(root, relief='raised', bd=1, width=300)
         self.topF.pack(side=TOP, fill=X, expand=NO)
         
         top_leftF = Frame(self.topF)
@@ -167,7 +166,7 @@ class Application(Frame):
         
         self.top_entry = StringVar()
         self.top_entry.set('')       
-        Entry(top_rightF, textvariable=self.top_entry, width=100).pack(side=LEFT, fill=X)
+        Entry(top_rightF, textvariable=self.top_entry, width=100).pack(side=LEFT)
         
         Button(top_rightF,
                text=u'rset',
@@ -279,7 +278,7 @@ class Application(Frame):
         # notelabel.pack(side=TOP) 
 
         # notetext = Text(frame, height=50, width=50)
-        notetext = Text(frame, width=50)
+        notetext = Text(frame, width=45)
         notetext.tag_configure('big',
                                foreground='red',
                                font=('Verdana', 24, 'bold')) 
