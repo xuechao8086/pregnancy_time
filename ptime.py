@@ -32,12 +32,40 @@ class Application(Frame):
         self.now = time.mktime(time.localtime())
         
         master.title(sys.argv[0])
-        master.option_add('*font', ('verdana', 13, 'bold')) 
+        # master.option_add('*font', ('verdana', 13, 'bold')) 
         # master.geometry("300x200")
         
         Frame.__init__(self, master)
         self.pack()
+        self.create_top_menu()
         self.createWidgets()
+
+    def create_top_menu(self):
+        """create top menu""" 
+        top = self.winfo_toplevel()
+        self.menuBar = Menu(top)
+        
+        top['menu'] = self.menuBar
+        
+        actionMenu = Menu(self.menuBar)
+        self.menuBar.add_cascade(label="Action", menu=actionMenu)
+        actionMenu.add_command(label="yesterday",
+                               command=functools.partial(self.bupdate, 
+                                                         self.beg,
+                                                         -1)) 
+        actionMenu.add_command(label="tommorrow",
+                               command=functools.partial(self.bupdate,
+                                                         self.beg,
+                                                        +1))            
+        actionMenu.add_command(label="today",
+                               command=functools.partial(self.bupdate,
+                                                         self.beg,
+                                                         0))
+
+
+        helpMenu = Menu(self.menuBar)
+        self.menuBar.add_cascade(label="Help", menu=helpMenu)
+        helpMenu.add_command(label="About", command=None)
 
 
     def __del__(self):
@@ -174,6 +202,7 @@ class Application(Frame):
                                          0)).pack(side=LEFT)
 
         self.contentF = Frame(root)
+        self.contentF.option_add('*font', ('verdana', 13, 'bold')) 
         self.contentF.pack(side=TOP)        
         
         self.content_fill(self.beg,
