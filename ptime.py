@@ -24,7 +24,7 @@ class Application(Frame):
 
     def __init__(self, master=None, debug=False):
         self.debug = debug 
-        self.dat = os.path.join(os.path.dirname(sys.argv[0]),
+        self.dat = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
                                 "./dat.xls") 
         
         self.beg = "2015-08-19 00:00:00"
@@ -201,7 +201,7 @@ class Application(Frame):
     def update_time(self):
         try:
             while True:
-                self.time_label.set(time.strftime("%Y-%m:%d %H:%M:%S", time.localtime()))
+                self.time_label.set(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
                 time.sleep(1)
         except:
             pass
@@ -362,6 +362,7 @@ class Application(Frame):
 if __name__ == '__main__':
 
     root = Tk()
+    # root.withdraw() 
     app = Application(master=root)
 
     app.mainloop()
