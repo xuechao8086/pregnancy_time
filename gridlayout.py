@@ -13,7 +13,6 @@ import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
-
 class GridLayout(QtGui.QWidget):
     def __init__ (self, parent = None):
         QtGui.QWidget.__init__(self, parent)
@@ -85,12 +84,55 @@ class GridLayout(QtGui.QWidget):
         self.textEdit = QtGui.QTextEdit()
         grid.addWidget(self.textEdit, 22, 0, 4, 4)
 
+        self.cb = QtGui.QCheckBox("show title", self)
+        self.cb.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.cb.toggle()
+        self.connect(self.cb,
+                     QtCore.SIGNAL('stateChanged(int)'),
+                     self.changeTitle)
+        grid.addWidget(self.cb, 27, 0)
+
+        self.pbar = QtGui.QProgressBar(self)
+        grid.addWidget(self.pbar, 28, 1, 1, 3)
+        
+        self.pbutton = QtGui.QPushButton('pbutton')
+        grid.addWidget(self.pbutton, 27, 1)
+        self.connect(self.pbutton, 
+                     QtCore.SIGNAL('clicked()'),
+                     self.onStart)
+        
+
+
         self.setLayout(grid)
-       
+        self.step = 0
+        self.timer = QtCore.QBasicTimer()
         # self.connect(self,
         #              QtCore.SIGNAL('closeEmitApp()'),
         #              QtCore.SLOT('close()'))        
-   
+    
+    def timerEvent(self, event):
+        if self.step >= 1000:
+            self.timer.stop()
+            return
+        self.step += 1
+        self.pbar.setValue(self.step)
+    
+    def onStart(self):
+        if self.timer.isActive():
+            self.timer.stop()
+            self.pbutton.setText('Start')
+        else:
+            self.timer.start(1000, self)
+            self.pbutton.setText('Stop')
+
+    def changeTitle(self, value):
+        if self.cb.isChecked():
+            # self.setWindowTitle('CheckBox')
+            self.setWindowTitle(str(value))
+        else:
+            # self.setWindowTitle('unchecked')
+            self.setWindowTitle(str(value))
+
     def showDialog4(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'open file', '~')
         with open(filename, 'r') as f:
@@ -105,7 +147,7 @@ class GridLayout(QtGui.QWidget):
     def showDialog2(self):
         col = QtGui.QColorDialog.getColor()
         if col.isValid():
-            print col
+            print(col)
 
     def showDialog(self):
         text, ok = QtGui.QInputDialog.getText(self,
