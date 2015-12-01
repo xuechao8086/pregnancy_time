@@ -30,8 +30,9 @@ class Application(Frame):
         self.beg = "2015-08-19 00:00:00"
         self.end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())        
         self.now = time.mktime(time.localtime())
+        self.master = master 
+        self.master.title(sys.argv[0])
         
-        master.title(sys.argv[0])
         # master.option_add('*font', ('verdana', 13, 'bold')) 
         # master.geometry("300x200")
         
@@ -160,8 +161,12 @@ class Application(Frame):
             )
 
         #top bar
-        self.topF = Frame(root, relief='raised', bd=1, width=300)
-        self.topF.pack(side=TOP, fill=X, expand=NO)
+        self.topF = Frame(root, 
+                          relief='raised', 
+                          bd=1, 
+                          width=self.master.winfo_screenwidth())
+        self.topF.pack(side=TOP,
+                       fill=X)
         
         top_leftF = Frame(self.topF)
         top_leftF.pack(side=LEFT)
@@ -173,9 +178,9 @@ class Application(Frame):
             time.strftime(u"%Y-%m-%d %H:%M:%S", time.localtime())))
     
         Label(top_leftF,
-              textvariable=self.time_label).pack(side=TOP, padx=10, anchor=W)
+              textvariable=self.time_label).pack(side=LEFT, padx=10, anchor=W)
 
-        Button(top_rightF, 
+        Button(top_leftF, 
                text=u"昨天", 
                relief=GROOVE,
                borderwidth=5,
@@ -183,7 +188,7 @@ class Application(Frame):
                                          self.beg, 
                                          -1)).pack(side=LEFT,padx=5)
         
-        Button(top_rightF,
+        Button(top_leftF,
                text=u"明天",
                relief=GROOVE,
                borderwidth=5,
@@ -191,35 +196,25 @@ class Application(Frame):
                                          self.beg,
                                          1)).pack(side=LEFT) 
         
-        self.top_entry = StringVar()
-        self.top_entry.set('')       
-        Entry(top_rightF, textvariable=self.top_entry, width=100).pack(side=LEFT)
         
         Button(top_rightF,
                text=u'rset',
                command=functools.partial(self.bupdate,
                                          self.beg,
-                                         0)).pack(side=LEFT)
+                                         0)).pack(side=RIGHT,)
+        
+        self.top_entry = StringVar()
+        self.top_entry.set('')       
+        Entry(top_rightF, textvariable=self.top_entry, width=100).pack(side=RIGHT,
+                                                            fill=X)
 
-        self.contentF = Frame(root)
+        self.contentF = Frame(root,
+                              width=self.master.winfo_screenwidth())
         self.contentF.option_add('*font', ('verdana', 13, 'bold')) 
         self.contentF.pack(side=TOP)        
         
         self.content_fill(self.beg,
                           self.end)
-
-        # self.bottomF = Frame(root, width=100)
-        # self.bottomF.pack(side=TOP)
-        # self.bottom_label = StringVar()
-        # self.bottom_label.set(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        
-        # bottomLabelF = Frame(self.bottomF)
-        # bottomLabelF.pack(side=RIGHT)
-        # l = Label(bottomLabelF,
-        #      textvariable=self.bottom_label)
-        # l.pack(side=RIGHT, fill=X)
-        # l.grid(row=1, column=99) 
-        # l.place(in_=bottomLabelF,x=1, y=1, relx=0, rely=0, anchor=SE) 
 
         # bg_thread = threading.Thread(target=self.update_content, args=(self.beg, self.end))       
         # bg_thread.start()
@@ -276,29 +271,41 @@ class Application(Frame):
         #left side, daily note.
         dailyF = Frame(contentFL,
                        #relief=SUNKEN, bd=1
+                       width=self.master.winfo_screenwidth()/3,
+                       height=self.master.winfo_screenheight()
                       )
         dailyF.pack(side=LEFT)
+        dailyF.pack_propagate(0)
+
+        weekF = Frame(contentFL,
+                      width=self.master.winfo_screenwidth()/3,
+                      height=self.master.winfo_screenheight())
+        weekF.pack(side=LEFT)
+        weekF.pack_propagate(0)
+        
+        monthF = Frame(contentFL,
+                       width=self.master.winfo_screenwidth()/3,
+                       height=self.master.winfo_screenheight())
+        monthF.pack(side=LEFT)        
+        monthF.pack_propagate(0)
+        
         self.fill_text(dailyF,
                        lval=u"第{}天({}周另加{}天),日提醒:".format(days, weeks, days2),
                        cval=self.get_daily(days+1, 4)) 
-        # notescroll.pack(side=RIGHT, fill=Y)
-        # destroy method
-        # dailyF.destroy()        
-        
-        # week
-        weekF = Frame(contentFL)
-        weekF.pack(side=LEFT)
         self.fill_text(weekF,
                        lval=u"第{}周,周提醒:".format(weeks+1),
                        cval=self.get_week(weeks+3, 3))
          
-        # month
-        monthF = Frame(contentFL)
-        monthF.pack(side=LEFT)        
         self.fill_text(monthF,
                        lval=u"第{}月, 月提示:".format(month+1),
                        cval=self.get_month(2+(month)*4, 13))
+    
+    def calc_width(self):
+        screen_width_pixel = self.master.winfo_screenwidth()
+        screen_height_pixel = self.master.winfo_screenheight()
+                
 
+    
     def fill_text(self, frame, lval, cval):
         """
         `param frame`: frame
@@ -312,7 +319,11 @@ class Application(Frame):
         # notelabel.pack(side=TOP) 
 
         # notetext = Text(frame, height=50, width=50)
-        notetext = Text(frame, width=45)
+
+        notetext = Text(frame,
+                        width=100,
+                        height=self.master.winfo_screenheight())
+        
         notetext.tag_configure('big',
                                foreground='red',
                                font=('Verdana', 24, 'bold')) 
@@ -389,8 +400,10 @@ class Application(Frame):
         print "hello_command"
 
 if __name__ == '__main__':
-
     root = Tk()
+    root['width'] = root.winfo_screenwidth() 
+    root['height'] = root.winfo_screenheight() 
+
     # root.withdraw() 
     app = Application(master=root)
 
