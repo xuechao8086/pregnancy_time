@@ -101,7 +101,12 @@ class GridLayout(QtGui.QWidget):
                      QtCore.SIGNAL('clicked()'),
                      self.onStart)
         
-
+        dial = QtGui.QDial()
+        grid.addWidget(dial, 29, 0)
+        self.connect(dial, 
+                     QtCore.SIGNAL("valueChanged(int)"),
+                     lcd,
+                     QtCore.SLOT("display(int)"))
 
         self.setLayout(grid)
         self.step = 0
