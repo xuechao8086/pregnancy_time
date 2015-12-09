@@ -32,7 +32,7 @@ class Application(Frame):
         self.now = time.mktime(time.localtime())
         self.master = master 
         self.master.title(sys.argv[0])
-        
+        self.master.wm_state('zoomed') 
         # master.option_add('*font', ('verdana', 13, 'bold')) 
         # master.geometry("300x200")
         
