@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gbk">
+<title>预产期计算器 - 倍儿亲育儿网 - 将科学育儿进行到底！</title>
+<script src="berqin.jquery.1.6.m.js" type="text/javascript"></script>
+<script src="berqin.js" type="text/javascript"></script>
+<style>
+    body{margin:0 auto;font-size:14px;background:#3A0274;font-family:"宋体";color:#54316F;background:url(images/bg1.gif) center no-repeat;background-position:center top;}
+    #main{width:520px;height:550px;margin:auto;padding:0 10px 10px 10px;background:url(images/bg.gif);}
+
+    #dateline{width:518px;height:290px;position:relative;overflow:hidden;float:left;border:1px solid #DED2EE;background:url(images/line-bg1.png);}
+
+    #date{width:5000px;margin:0;height:36px;margin-left:-5px;overflow:hidden;}
+    dl{display:block;float:left;margin:0;padding:0;text-align:center;color:#999;}
+    dd{display:block;float:left;width:10px;margin:0;padding:0;font-size:10px;height:22px;text-align:center;}
+    dt{font-size:12px;color:#666;padding-top:3px;}
+    .d1{background:url(images/db1.gif) 5px 0px no-repeat;margin-left:0px;}
+    .d2{background:url(images/db2.gif) 5px 9px no-repeat;color:#db0000;}
+    .d3{background:url(images/db3.gif) 5px 14px no-repeat;}
+
+    #con{width:5000px;overflow:hidden;height:252px;position:absolute;left:0;}
+
+    #tf,#tr{cursor:pointer;float:left;background:url(images/line-bg2.png);height:22px;line-height:24px;width:60px;text-align:center;overflow:hidden;color:#fff;margin-top:10px;}
+    #tf:Hover,#tr:Hover,#btn:hover{background:#333;color:#fff;}
+    #tr{float:right;}
+    #week,#bb_w,#bb_l,#bb_s,#mm_w,#mm_j,#now{height:36px;overflow:hidden;width:5000px;line-height:37px;}
+
+    #bb_w{padding-top:36px;}
+
+    #m1{margin-top:5px;}
+
+    #tips{position:absolute;left:0px;top:36px;}
+    #tips span{display:block;float:left;overflow:hidden;background:url(images/db3.gif) repeat-y;padding-top:192px;padding-left:5px;padding-bottom:30px;position:absolute;font-size:12px;width:70px;}
+
+    #other{clear:both;margin:auto;font-size:12px;line-height:24px;color:#333;padding:0;height:35px;display:None;}
+    #other span{display:block;}
+
+    #week span,#bb_w span,#bb_l span,#mm_w span,#mm_j span,#date span{width:70px;text-align:center;display:block inline;float:left;font-size:12px;background:url(images/db3.gif) repeat-y;height:36px;line-height:40px;}
+    #bb_l span{width:140px;}
+
+
+    #menu{float:left;padding:0;margin:0;border:1px solid #DED2EE;border-right:0;height:255px;background:url(images/line-bg.png);}
+    #menu span{display:block;height:36px;line-height:30px;overflow:hidden;width:68px;text-align:center;font-size:12px;}
+
+    #now{position:absolute;left:0;top:-10px;background:url(images/tri1.png) no-repeat;height:300px;background-position:6px 26px;font-size:12px;color:#db0000;font-weight:bold;}
+    #logo{height:50px;text-align:right;padding-top:8px;}
+    #putin{margin-top:20px;margin-left:170px;line-height:22px;}
+    #putin span{padding-bottom:10px;}
+    .btn{background:#9169C9;color:#fff;font-size:14px;cursor:pointer;line-height:14px;border:0;height:20px;margin-top:-2px;width:50px;}
+    .btn:hover{background:#7144B1;}
+    #putin span span{color:#db0000;font-weight:bold;}
+    #foot {font-family:"微软雅黑","黑体";font-size:14px;text-align:center;margin-top:18px;}
+    #alison {font-family:"微软雅黑","黑体";font-size:24px;text-align:left;color:#FF4500;}
+    #foot a{text-decoration:none;color:#333;}
+    #now,#menu{display:None;}
+
+
+    #week{z-index:999;position:absolute;}
+    #week a{text-decoration:none;height:36px;width:70px;display:block;color:#54316F;position:relative;}
+    #week a:hover{background:url(images/line-bg4.png);}
+    #week img{display:block;position:absolute;border:0;left:54px;top:0px;}
+
+    #gj_info{padding:20px 20px 20px 20px;line-height:22px;}
+    #gj_info span{display:block;margin-bottom:10px;}
+    .myem{background:url(images/line-bg3.png);padding-top:10px;padding-bottom:5px;}
+
+    #tm{line-height:43px;height:40px;}
+    input{width:30px;}
+    .ip2{width:18px;}
+</style>
+</head>
+<body>
+    <div id=main>
+        <div id=logo> </div>
+        <div id=putin>
+            <span style="display:block;">
+                <b id="alison", name="alison">婷婷</b>, 以最后一次来月经时间：<br>
+                <input size="4" maxlength="4" name="year"  id="year" value="" type="text" />
+                年	
+                <input size="2" maxlength="2" name="month"  id="month" value="" type="text" class=ip2 />
+                月	
+                <input size="2"  maxlength="2"name="day" id="day" value="" type="text" class=ip2 />日,&nbsp;&nbsp;	
+                月经周期：
+                <select id="mweek">
+                    <option value="20">20</option>					
+                    <option value="21">21</option>
+                    <option value="22">22</option>					
+                    <option value="23">23</option>
+                    <option value="24">24</option>					
+                    <option value="25">25</option>
+                    <option value="26">26</option>					
+                    <option value="27">27</option>
+                    <option value="28" selected>28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                    <option value="32">32</option>
+                    <option value="33">33</option>
+                    <option value="34">34</option>
+                    <option value="35">35</option>
+                    <option value="36">36</option>
+                    <option value="37">37</option>
+                    <option value="38">38</option>
+                    <option value="39">39</option>
+                    <option value="40">40</option>
+                    <option value="41">41</option>
+                    <option value="42">42</option>
+                    <option value="43">43</option>
+                    <option value="44">44</option>
+                    <option value="45">45</option>
+                </select>天
+                <input type="submit" name="botton" value="计 算" class=btn id=btn1>
+            </span>
+            <span style="display:block;">
+                <br>
+                预产期：<span id=cy></span>&nbsp;年&nbsp;<span id=cm></span>&nbsp;月&nbsp;<span id=cd></span>&nbsp;日<br>
+                已经怀孕：<span id=ccd></span>&nbsp;
+            </span>
+        </div>
+        <div id=menu>
+            <span id=m1>时间线</span>
+            <span id=m2>妊娠周数</span>
+            <span id=m3>胎儿体重</span>
+            <span id=m4>胎儿身长</span>
+            <span id=m5>孕妇增重</span>
+            <span id=m6>产前检查</span>
+            <span id=m7>胎儿发育</span>
+        </div>
+        <div id=dateline>
+            <div id=gj_info>
+                <span>　　整个孕期约为40周，即9个月零7天左右，通过末次月经时间可以推算预产期。推算方法是按末次月经时间的第一日算起，月份减3或加9，日数加7。但是实际分娩日期与推算的预产期可能会相差1～2周，如果孕妇的末次月经日期记忆不清或月经不准，就需要医生代为测算预产期。</span>
+                <span>　　本算法算法是以28天的月经周期为计算基础，因此必须选择个人月经周期长短加以修正。如果您确切了解妊娠周数，可以直接 <A HREF="http://www.berqin.com/gongju/104558.htm" target=_blank>查看胎儿发育图解</A> 。</span>
+                <span class=myem>　　<B>注意：</B>只有约 <B>5%</B> 的孕妇会刚好在预产期那天分娩；<br>　　　　　本工具的计算结果仅供参考，如有更多需求请咨询医生。</span>
+
+            </div>
+            <div id=con>
+                <div id=now>当前</div>
+                <div id=tips>
+                </div>
+                <div id=date>
+
+                </div>
+                <div id=week>
+
+                </div>
+                <div id=bb_w>
+
+                </div>
+                <div id=bb_l>
+
+                </div>
+                <div id=mm_w>
+                </div>
+                <div id=mm_j>		
+                </div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+        <div id=other>
+            <span id=tr>右移>></span>
+            <span id=tf><<左移</span>
+            <span id=tm>　提示：点击两侧按钮移动时间线，或用方向键“←”、“→”移动。</span>
+        </div>
+    </div>
+</body>
+</html>
