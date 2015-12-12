@@ -58,9 +58,9 @@ class MainWindow(QtGui.QMainWindow):
         self.searchEdit.returnPressed.connect(self.search)        
         
         choiceGroupBox = QtGui.QGroupBox(u"")
-        self.radio1 = QtGui.QRadioButton(u"预产期计算")
-        self.radio2 = QtGui.QRadioButton(u"第{}周,宝宝发育图解".format(self.weeks))
-        self.radio3 = QtGui.QRadioButton(u"第{}周,excel提醒".format(self.weeks))
+        self.radio1 = QtGui.QRadioButton(u"今日第{}天, 产检注意".format(self.days))
+        self.radio2 = QtGui.QRadioButton(u"本周第{}周, 宝发育图解".format(self.weeks+1))
+        self.radio3 = QtGui.QRadioButton(u"本周第{}周, excel提醒".format(self.weeks+1))
         self.radio1.setChecked(True)
         self.radio1.clicked.connect(self.radio1Click)
         self.radio2.clicked.connect(self.radio2Click)        
@@ -110,8 +110,12 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(widget)
         
         self.setWindowFlags(QtCore.Qt.WindowMinMaxButtonsHint)
+        label = QtGui.QLabel("test for charlie")
+        label.setGeometry(300, 300, 10, 10)
+
         self.setWindowTitle(u"婷婷怀孕周期")        
         
+
     def radio1Click(self):
         # print 'radio1 click'
         url = QtCore.QUrl("file:///Users/charlie/Documents/pregnancy_time/ptime.html")
@@ -170,11 +174,11 @@ class MainWindow(QtGui.QMainWindow):
     
     def get_notice(self):
         """""" 
-        content = """<p>今日第{}天({}周+{}天):<br/>{} </p>
-                     <p>本周第{}周:<br/>{}</p>
-                     <p>本月第{}月:<br/>{}</p>""".format(self.days, self.weeks, self.days2, self.get_daily(self.days+1, 4),
-                                                         self.weeks, self.get_week(self.weeks+3, 3),
-                                                         self.month, self.get_month(2+(self.month)*4, 13))
+        content = """<p><span style="color:red;">今日第{}天({}周+{}天):</span><br/>{} </p>
+                     <p><span style="color:red;">本周第{}周:</span><br/>{}</p>
+                     <p><span style="color:red;">本月第{}月:</span><br/>{}</p>""".format(self.days, self.weeks, self.days2, self.get_daily(self.days+1, 4),
+                                                         self.weeks+1, self.get_week(self.weeks+3, 3),
+                                                         self.month+1, self.get_month(2+(self.month)*4, 13))
     
         self.view.setHtml(content.decode('utf-8'), QtCore.QUrl())
 
@@ -205,6 +209,7 @@ class MainWindow(QtGui.QMainWindow):
                 return u"无内容可显示, 请检查excel".encode('utf-8')
         
     def get_month(self, row, col):
+        # print("row={}, col={}".format(row, col))
         with xlrd.open_workbook(self.dat) as book:
             sh = book.sheet_by_index(4)
             if self.debug:
@@ -217,12 +222,13 @@ class MainWindow(QtGui.QMainWindow):
                             print i, j, sh.cell_value(i, j).encode('utf-8')
                         except:
                             print i, j, 'no val'
+                
             try:
-                nutrient = sh.cell_value(row, col-2)            
-                role = sh.cell_value(row, col-1) 
-                note = sh.cell_value(row, col)
+                nutrient = sh.cell_value(row, col-2).encode('utf-8')            
+                role = sh.cell_value(row, col-1).encode('utf-8')
+                note = sh.cell_value(row, col).encode('utf-8')
 
-                return "营养素:{}\n作用:{}\n说明:{}\n".format(nutrient, role, note).encode('utf-8')
+                return "营养素:{}<br/>作用:{}<br/>说明:{}<br/>".format(nutrient, role, note)
             except:
                 return u"无内容可显示，请检查excel".encode('utf-8')
 
@@ -240,5 +246,7 @@ if __name__ == '__main__':
         # url = QtCore.QUrl("http://www.berqin.com/app/fayuguocheng/2-0-0-2.html")
 
     browser = MainWindow(url) 
-    browser.show() 
+    # browser.show() 
+    # browser.showFullScreen() 
+    browser.showMaximized() 
     sys.exit(app.exec_())

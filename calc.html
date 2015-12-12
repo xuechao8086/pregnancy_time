@@ -1,0 +1,125 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="./berqin.jquery.1.6.m.js" type="text/javascript"></script>
+        <script src="./berqin.js" type="text/javascript"></script>
+    </head>
+    <style>
+        body{margin:0 auto;font-size:14px;background:#3A0274;font-family:"宋体";color:#54316F;background:url(images/bg1.gif) center no-repeat;background-position:center top;}
+        #main{width:520px;height:550px;margin:auto;padding:0 10px 10px 10px;background:url(images/bg.gif);}
+
+        #dateline{width:518px;height:290px;position:relative;overflow:hidden;float:left;border:1px solid #DED2EE;background:url(images/line-bg1.png);}
+
+        #date{width:5000px;margin:0;height:36px;margin-left:-5px;overflow:hidden;}
+        dl{display:block;float:left;margin:0;padding:0;text-align:center;color:#999;}
+        dd{display:block;float:left;width:10px;margin:0;padding:0;font-size:10px;height:22px;text-align:center;}
+        dt{font-size:12px;color:#666;padding-top:3px;}
+        .d1{background:url(images/db1.gif) 5px 0px no-repeat;margin-left:0px;}
+        .d2{background:url(images/db2.gif) 5px 9px no-repeat;color:#db0000;}
+        .d3{background:url(images/db3.gif) 5px 14px no-repeat;}
+
+        #con{width:5000px;overflow:hidden;height:252px;position:absolute;left:0;}
+
+        #tf,#tr{cursor:pointer;float:left;background:url(images/line-bg2.png);height:22px;line-height:24px;width:60px;text-align:center;overflow:hidden;color:#fff;margin-top:10px;}
+        #tf:Hover,#tr:Hover,#btn:hover{background:#333;color:#fff;}
+        #tr{float:right;}
+        #week,#bb_w,#bb_l,#bb_s,#mm_w,#mm_j,#now{height:36px;overflow:hidden;width:5000px;line-height:37px;}
+
+        #bb_w{padding-top:36px;}
+
+        #m1{margin-top:5px;}
+
+        #tips{position:absolute;left:0px;top:36px;}
+        #tips span{display:block;float:left;overflow:hidden;background:url(images/db3.gif) repeat-y;padding-top:192px;padding-left:5px;padding-bottom:30px;position:absolute;font-size:12px;width:70px;}
+
+        #other{clear:both;margin:auto;font-size:12px;line-height:24px;color:#333;padding:0;height:35px;display:None;}
+        #other span{display:block;}
+
+        #week span,#bb_w span,#bb_l span,#mm_w span,#mm_j span,#date span{width:70px;text-align:center;display:block inline;float:left;font-size:12px;background:url(images/db3.gif) repeat-y;height:36px;line-height:40px;}
+        #bb_l span{width:140px;}
+
+
+        #menu{float:left;padding:0;margin:0;border:1px solid #DED2EE;border-right:0;height:255px;background:url(images/line-bg.png);}
+        #menu span{display:block;height:36px;line-height:30px;overflow:hidden;width:68px;text-align:center;font-size:12px;}
+
+        #now{position:absolute;left:0;top:-10px;background:url(images/tri1.png) no-repeat;height:300px;background-position:6px 26px;font-size:12px;color:#db0000;font-weight:bold;}
+        #logo{height:50px;text-align:right;padding-top:8px;}
+        #putin{margin-top:20px;margin-left:170px;line-height:22px;}
+        #putin span{padding-bottom:10px;}
+        .btn{background:#9169C9;color:#fff;font-size:14px;cursor:pointer;line-height:14px;border:0;height:20px;margin-top:-2px;width:50px;}
+        .btn:hover{background:#7144B1;}
+        #putin span span{color:#db0000;font-weight:bold;}
+        #foot {font-family:"微软雅黑","黑体";font-size:14px;text-align:center;margin-top:18px;}
+        #foot a{text-decoration:none;color:#333;}
+        #now,#menu{display:None;}
+
+
+        #week{z-index:999;position:absolute;}
+        #week a{text-decoration:none;height:36px;width:70px;display:block;color:#54316F;position:relative;}
+        #week a:hover{background:url(images/line-bg4.png);}
+        #week img{display:block;position:absolute;border:0;left:54px;top:0px;}
+
+        #gj_info{padding:20px 20px 20px 20px;line-height:22px;}
+        #gj_info span{display:block;margin-bottom:10px;}
+        .myem{background:url(images/line-bg3.png);padding-top:10px;padding-bottom:5px;}
+
+        #tm{line-height:43px;height:40px;}
+        input{width:30px;}
+        .ip2{width:18px;}
+    </style>
+    <body>
+        <div id="main">
+            <div id="putin">
+                <span style="display:block;">
+                    请输入您的最后一次来月经的时间：<br>
+                    <input size="4" maxlength="4" name="year" id="year" value="" type="text">
+                    年
+                    <input size="2" maxlength="2" name="month" id="month" value="" type="text" class="ip2">
+                    月
+                    <input size="2" maxlength="2" name="day" id="day" value="" type="text" class="ip2">
+                    日
+                    月经周期：
+                    <select id="mweek">
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28" selected="">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                        <option value="32">32</option>
+                        <option value="33">33</option>
+                        <option value="34">34</option>
+                        <option value="35">35</option>
+                        <option value="36">36</option>
+                        <option value="37">37</option>
+                        <option value="38">38</option>
+                        <option value="39">39</option>
+                        <option value="40">40</option>
+                        <option value="41">41</option>
+                        <option value="42">42</option>
+                        <option value="43">43</option>
+                        <option value="44">44</option>
+                        <option value="45">45</option>
+                    </select>天
+                    <input type="submit" name="botton" value="计 算" class="btn" id="btn1">
+                </span>
+                <span style="display:block;">
+                    计算结果：<br>
+                    您的预产期：
+                    <span id="cy"></span>&nbsp;年&nbsp;<span id="cm"></span>&nbsp;月&nbsp;<span id="cd"></span>&nbsp;日<br>
+                    您已经怀孕：<span id="ccd"></span>&nbsp;天
+                </span>
+            </div>
+            <div id="dateline">
+                <div id="now"></div>
+                   
+            </div>
+        </div>
+    </body>
+</html>
