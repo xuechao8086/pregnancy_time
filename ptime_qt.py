@@ -58,18 +58,21 @@ class MainWindow(QtGui.QMainWindow):
         self.searchEdit.returnPressed.connect(self.search)        
         
         choiceGroupBox = QtGui.QGroupBox(u"")
-        self.radio1 = QtGui.QRadioButton(u"今日第{}天, 产检注意".format(self.days))
-        self.radio2 = QtGui.QRadioButton(u"本周第{}周, 宝发育图解".format(self.weeks+1))
-        self.radio3 = QtGui.QRadioButton(u"本周第{}周, excel提醒".format(self.weeks+1))
+        self.radio1 = QtGui.QRadioButton(u"今日第{:>3d}天, 预产期计算器".format(self.days))
+        self.radio2 = QtGui.QRadioButton(u"本周第{:>3d}周, 宝发育图解".format(self.weeks+1))
+        self.radio3 = QtGui.QRadioButton(u"本周第{:>3d}周, excel提醒".format(self.weeks+1))
+        self.radio4 = QtGui.QRadioButton(u"本月第{:>3d}月，产检项目和时间安排".format(self.month+1))
         self.radio1.setChecked(True)
         self.radio1.clicked.connect(self.radio1Click)
         self.radio2.clicked.connect(self.radio2Click)        
         self.radio3.clicked.connect(self.get_notice)        
+        self.radio4.clicked.connect(self.radio4Click)        
 
         choiceLayout = QtGui.QVBoxLayout()
         choiceLayout.addWidget(self.radio1)
-        choiceLayout.addWidget(self.radio2)
+        choiceLayout.addWidget(self.radio4)
         choiceLayout.addWidget(self.radio3)
+        choiceLayout.addWidget(self.radio2)
         choiceLayout.addStretch(1)
         choiceGroupBox.setLayout(choiceLayout)
         
@@ -96,6 +99,26 @@ class MainWindow(QtGui.QMainWindow):
         # dateMenu.addAction(yesterdayAction)        
         # dateMenu.addAction(tomorrowAction)
         
+        opMenu = self.menuBar().addMenu(u"&操作")
+        radio1Action = QtGui.QAction(u"预产期计算器", self)
+        radio2Action = QtGui.QAction(u"宝宝发育图解", self)
+        radio3Action = QtGui.QAction(u"excel提醒", self)
+        radio4Action = QtGui.QAction(u"产检项目和时间安排", self)        
+        radio1Action.triggered.connect(self.radio1Click)        
+        radio2Action.triggered.connect(self.radio2Click)        
+        radio3Action.triggered.connect(self.get_notice)        
+        radio4Action.triggered.connect(self.radio4Click)        
+        opMenu.addAction(radio1Action)
+        opMenu.addAction(radio2Action)
+        opMenu.addAction(radio3Action)
+        opMenu.addAction(radio4Action)
+
+        
+        aboutMenu = self.menuBar().addMenu(u"&关于")
+        aboutAction = QtGui.QAction(u"关于", self)        
+        aboutAction.triggered.connect(self.about)
+        aboutMenu.addAction(aboutAction)
+
         toolBar = self.addToolBar(u"工具栏")
         # toolBar.addAction(yesterdayAction)        
         # toolBar.addAction(tomorrowAction)        
@@ -113,17 +136,31 @@ class MainWindow(QtGui.QMainWindow):
         label = QtGui.QLabel("test for charlie")
         label.setGeometry(300, 300, 10, 10)
 
-        self.setWindowTitle(u"婷婷怀孕周期")        
-        
+        self.setWindowTitle(u"婷婷怀孕工具箱")        
+
+    def about(self):
+        QtGui.QMessageBox.about(self, 
+                                u"婷婷怀孕工具箱",
+                                u'by charliezhao<br/>部分工具来自<a href=""http://www.berqin.com">倍儿亲育婴</a>')        
 
     def radio1Click(self):
         # print 'radio1 click'
-        url = QtCore.QUrl("file:///Users/charlie/Documents/pregnancy_time/ptime.html")
+        path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
+                            "ptime.html")
+
+        url = QtCore.QUrl(path)
         self.view.load(url)        
 
     def radio2Click(self):
         # print 'radio2 click'
         url = QtCore.QUrl("http://www.berqin.com/app/fayuguocheng/2-0-0-{}.html".format(self.weeks))
+        self.view.load(url)        
+        
+    def radio4Click(self):
+        path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
+                            "pnotice.html")
+        
+        url = QtCore.QUrl(path) 
         self.view.load(url)        
 
     def finishLoading(self):
@@ -235,14 +272,20 @@ class MainWindow(QtGui.QMainWindow):
    
 
 if __name__ == '__main__': 
-    import sys 
     app = QtGui.QApplication(sys.argv)
+    iconpath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
+                            "images",
+                            "icon.png"
+                           )    
+    app.setWindowIcon(QtGui.QIcon(iconpath))
+
     if len(sys.argv) > 1:
         url = QtCore.QUrl(sys.argv[1])
     else:
+        path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "ptime.html")
         # url = QtCore.QUrl("http://www.baidu.com") 
         # url = QtCore.QUrl("http://www.berqin.com/app2/ycqjsq/")
-        url = QtCore.QUrl("file:///Users/charlie/Documents/pregnancy_time/ptime.html")            
+        url = QtCore.QUrl(path)            
         # url = QtCore.QUrl("http://www.berqin.com/app/fayuguocheng/2-0-0-2.html")
 
     browser = MainWindow(url) 
