@@ -55,7 +55,7 @@ class MainWindow(QtGui.QMainWindow):
         self.searchEdit = QtGui.QLineEdit(self)
         self.searchEdit.setSizePolicy(QtGui.QSizePolicy.Expanding,
                                       self.searchEdit.sizePolicy().verticalPolicy()) 
-        self.searchEdit.returnPressed.connect(self.search)        
+        self.searchEdit.returnPressed.connect(self.adjust_location)        
         
         choiceGroupBox = QtGui.QGroupBox(u"")
         self.radio1 = QtGui.QRadioButton(u"今日第{:>3d}天, 预产期计算器".format(self.days))
@@ -70,8 +70,8 @@ class MainWindow(QtGui.QMainWindow):
 
         choiceLayout = QtGui.QVBoxLayout()
         choiceLayout.addWidget(self.radio1)
-        choiceLayout.addWidget(self.radio4)
         choiceLayout.addWidget(self.radio3)
+        choiceLayout.addWidget(self.radio4)
         choiceLayout.addWidget(self.radio2)
         choiceLayout.addStretch(1)
         choiceGroupBox.setLayout(choiceLayout)
@@ -138,6 +138,11 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setWindowTitle(u"婷婷怀孕工具箱")        
 
+    def adjust_location(self):
+        url = QtCore.QUrl.fromUserInput(self.searchEdit.text())
+        self.view.load(url)
+        self.view.setFocus()
+
     def about(self):
         QtGui.QMessageBox.about(self, 
                                 u"婷婷怀孕工具箱",
@@ -153,7 +158,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def radio2Click(self):
         # print 'radio2 click'
-        url = QtCore.QUrl("http://www.berqin.com/app/fayuguocheng/2-0-0-{}.html".format(self.weeks))
+        url = QtCore.QUrl("http://www.berqin.com/app/fayuguocheng/2-0-0-{}.html".format(self.weeks+1))
         self.view.load(url)        
         
     def radio4Click(self):
@@ -167,7 +172,8 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     def search(self):
-        print(self.searchEdit.text())        
+        url = QtCore.QUrl(self.searchEdit.text())
+        self.view.load(url)        
 
     def yesterday(self):
         pass
@@ -269,9 +275,15 @@ class MainWindow(QtGui.QMainWindow):
             except:
                 return u"无内容可显示，请检查excel".encode('utf-8')
 
-   
+
+def close_std():
+    sys.stdout.close()    
+    sys.stdout.close()
+
 
 if __name__ == '__main__': 
+    close_std()    
+
     app = QtGui.QApplication(sys.argv)
     iconpath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
                             "images",
