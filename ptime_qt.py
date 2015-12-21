@@ -35,7 +35,8 @@ class MainWindow(QtGui.QMainWindow):
         self.now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
         self.days, self.weeks, self.days2, self.month, self.valstr = self.get_pregnancy_time(self.beg,
                                                                                              self.now)
-
+        self.days3 = 0 # used for date opMenu  
+        
         QtNetwork.QNetworkProxyFactory.setUseSystemConfiguration(True) 
         self.view = QtWebKit.QWebView(self)
         self.view.load(url)
@@ -91,13 +92,22 @@ class MainWindow(QtGui.QMainWindow):
         leftLayout.addWidget(choiceGroupBox) 
         leftLayout.addWidget(dateGroupBox)
 
-        # dateMenu = self.menuBar().addMenu(u"&日期")
-        # yesterdayAction = QtGui.QAction(u"昨日", self)
-        # yesterdayAction.triggered.connect(self.yesterday)        
-        # tomorrowAction = QtGui.QAction(u"明日", self)
-        # tomorrowAction.triggered.connect(self.tomorrow) 
-        # dateMenu.addAction(yesterdayAction)        
-        # dateMenu.addAction(tomorrowAction)
+        dateMenu = self.menuBar().addMenu(u"&日期")
+        yesterdayAction = QtGui.QAction(u"昨日", self)
+        yesterdayAction.triggered.connect(self.yesterday)        
+        tomorrowAction = QtGui.QAction(u"明日", self)
+        tomorrowAction.triggered.connect(self.tomorrow) 
+        prevWeekAction = QtGui.QAction(u"上周", self) 
+        prevWeekAction.triggered.connect(self.prev_week)
+        nextWeekAction = QtGui.QAction(u"下周", self)
+        nextWeekAction.triggered.connect(self.next_week)
+        resetAction = QtGui.QAction(u"复位", self)
+        resetAction.triggered.connect(self.date_reset)
+        dateMenu.addAction(yesterdayAction)        
+        dateMenu.addAction(tomorrowAction)
+        dateMenu.addAction(prevWeekAction)
+        dateMenu.addAction(nextWeekAction)
+        dateMenu.addAction(resetAction) 
         
         opMenu = self.menuBar().addMenu(u"&操作")
         radio1Action = QtGui.QAction(u"预产期计算器", self)
@@ -113,7 +123,6 @@ class MainWindow(QtGui.QMainWindow):
         opMenu.addAction(radio3Action)
         opMenu.addAction(radio4Action)
 
-        
         aboutMenu = self.menuBar().addMenu(u"&关于")
         aboutAction = QtGui.QAction(u"关于", self)        
         aboutAction.triggered.connect(self.about)
@@ -176,12 +185,54 @@ class MainWindow(QtGui.QMainWindow):
         self.view.load(url)        
 
     def yesterday(self):
-        pass
+        self.days3 -= 1 
+        self.days, self.weeks, self.days2, self.month, self.valstr = self.get_pregnancy_time(self.beg,
+                                                                                             time.strftime("%Y-%m-%d %H:%M:%S", 
+                                                                                                           time.localtime(time.time()+self.days3*86400)))
+        if self.radio3.isChecked():
+            self.get_notice()
 
     def tomorrow(self):
-        pass
-   
+        self.days3 += 1        
+        self.days, self.weeks, self.days2, self.month, self.valstr = self.get_pregnancy_time(self.beg,
+                                                                                             time.strftime("%Y-%m-%d %H:%M:%S", 
+                                                                                                           time.localtime(time.time()+self.days3*86400)))
+        if self.radio3.isChecked():
+            self.get_notice()
+
+    def prev_week(self):    
+        self.days3 -= 7        
+        self.days, self.weeks, self.days2, self.month, self.valstr = self.get_pregnancy_time(self.beg,
+                                                                                             time.strftime("%Y-%m-%d %H:%M:%S", 
+                                                                                                           time.localtime(time.time()+self.days3*86400)))
+        if self.weeks > 0:
+            if self.radio2.isChecked():
+                self.radio2Click()
+            elif self.radio3.isChecked():
+                self.get_notice()
+
+
+    def next_week(self):
+        self.days3 += 7        
+        self.days, self.weeks, self.days2, self.month, self.valstr = self.get_pregnancy_time(self.beg,
+                                                                                             time.strftime("%Y-%m-%d %H:%M:%S", 
+                                                                                                           time.localtime(time.time()+self.days3*86400)))
+        if self.weeks <= 40:
+            if self.radio2.isChecked():
+                self.radio2Click()
+            elif self.radio3.isChecked():
+                self.get_notice()
     
+    def date_reset(self):
+        self.days3 = 0
+        self.days, self.weeks, self.days2, self.month, self.valstr = self.get_pregnancy_time(self.beg,
+                                                                                             self.now)
+        if self.radio2.isChecked():
+            self.radio2Click()
+        elif self.radio3.isChecked():
+            self.get_notice()
+                
+
     def get_pregnancy_time(self, beg, end):
         """
         `param beg`: %Y-%m-%d %H:%M:%S
